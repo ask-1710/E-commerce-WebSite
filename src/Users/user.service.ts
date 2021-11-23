@@ -29,7 +29,8 @@ export class UserService {
             state: state,
             pincode: pincode,
             country: country,
-            cardId: cardID
+            cardId: cardID,
+            orders: []
         }) ;
             
         this.usersRepo.save(pdt) ;

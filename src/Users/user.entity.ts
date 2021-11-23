@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn , OneToOne , OneToMany, Timestamp, CreateDateColumn, DeleteDateColumn } from 'typeorm';
+import { Orders } from 'src/Orders/orders.entity';
+import { Column, Entity, PrimaryGeneratedColumn , OneToOne , OneToMany, CreateDateColumn, DeleteDateColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -16,7 +17,7 @@ export class User {
     lastName: string;
 
     @Column()
-    DOB: Date;
+    DOB: string;
     
     @Column()
     email: string ;
@@ -51,4 +52,26 @@ export class User {
     @DeleteDateColumn()
     deleteTime: Date;
 
+    @OneToMany(type => Orders, order=>order.user) 
+    orders: Orders[];
+
 }
+
+// {
+//     "id": 1,
+//     "firstName": "mania",
+//     "middleName": " ",
+//     "lastName": "Singh",
+//     "DOB": "14/04/14",
+//     "email": "ma@gmail.com",
+//     "mobile": "432422313",
+//     "password": "padnai",
+//     "permanent_addr": "3/411, murat street",
+//     "city": "chennai",
+//     "pincode": "600006",
+//     "state": "TN",
+//     "country": "India",
+//     "registrationDate": "2021-11-22T08:58:09.261Z",
+//     "cardId": "SD213",
+//     "deleteTime": null
+// }

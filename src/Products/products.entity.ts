@@ -1,7 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ProductCategory } from './product_categories.entity';
 
 @Entity()
-export class ProductSchema {
+export class Products {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -14,5 +15,17 @@ export class ProductSchema {
     
     @Column()
     price: number;
+    
+    @CreateDateColumn()
+    productCreatedAt: Date;
+
+    @DeleteDateColumn()
+    productDeletedAt: Date;
+
+    @ManyToOne(type=>ProductCategory, pdtCategory=>pdtCategory.products, {cascade: ["insert", "update"]})
+    category: ProductCategory;
+
+    @Column()
+    qty: number;
 
 }

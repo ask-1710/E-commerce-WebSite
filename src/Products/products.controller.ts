@@ -1,30 +1,34 @@
 import { Controller, Post ,Body, Get ,Param,Patch,Delete } from "@nestjs/common";
-import { ObjectID } from "typeorm";
+import { Products } from "./products.entity";
+// import { ProductCategory  } from "./product_categories.entity";
 import { ProductService } from "./products.service";
 
 @Controller('products')
 export class ProductsController {
     constructor(private readonly pdtservice: ProductService) {}
-   
+    
     @Get()
     getallProducts() {
         return this.pdtservice.getProducts();
     }
 
     @Post()
-    addProduct(@Body('name') prodTitle: string, @Body('description') prodDesc: string, @Body('price') prodPrice: number): any {
-        const genId = this.pdtservice.insertProduct(prodTitle, prodDesc, prodPrice);
-        return {id: genId} ;
+    addProduct(@Body('name') prodTitle: string, @Body('description') prodDesc: string, @Body('price') prodPrice: number, @Body('category') categoryname: string, @Body('qty') qty: number) {
+        this.pdtservice.insertProduct(prodTitle, prodDesc, prodPrice, categoryname, qty);
     }
-
-    @Get(':id') 
-    getProductbyId(@Param('id') pdtId: number) {
-        return this.pdtservice.getProductbyId(pdtId);
+    @Get(':id')
+    getProductById(@Param('id') pdtId:number):Promise<Products> {
+        return this.pdtservice.getProductbyId(pdtId) ;
+    }
+    
+    @Get(':name') 
+    getProductbyName(@Param('name') pdtName: string): Promise<Products[]> {
+        return this.pdtservice.getProductsbyName(pdtName);
     }
 
     @Patch(':id')
-    updateProduct(@Param('id') pdtId:number, @Body('title') pdtTitle:string, @Body('description') descr: string, @Body('price') price: number) {
-        this.pdtservice.updateById(pdtId, pdtTitle, descr, price);
+    updateProduct(@Param('id') pdtId:number, @Body('title') pdtTitle:string, @Body('description') descr: string, @Body('price') price: number, @Body('categoryname') categoryname:string) {
+        this.pdtservice.updateById(pdtId, pdtTitle, descr, price, categoryname);
         return null ;
     }
 

@@ -1,5 +1,4 @@
 import { Controller, Post ,Body, Get ,Param,Patch,Delete } from "@nestjs/common";
-import { Timestamp } from "typeorm";
 import { UserService } from "./user.service";
 
 @Controller('users')

@@ -2,6 +2,9 @@
 /dist
 /node_modules
 
+#TODO
+/todo
+
 # Logs
 logs
 *.log
