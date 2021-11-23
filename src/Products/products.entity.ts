@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ProductReviews } from './product.reviews.entity';
 import { ProductCategory } from './product_categories.entity';
 
 @Entity()
@@ -22,10 +23,16 @@ export class Products {
     @DeleteDateColumn()
     productDeletedAt: Date;
 
-    @ManyToOne(type=>ProductCategory, pdtCategory=>pdtCategory.products, {cascade: ["insert", "update"]})
-    category: ProductCategory;
-
     @Column()
     qty: number;
+
+    @Column()
+    rating: number ;
+
+    @ManyToOne(type=>ProductCategory, pdtCategory=>pdtCategory.products, {cascade: ["insert", "update"]})
+    category: ProductCategory; 
+
+    @OneToMany(type=>ProductReviews,reviews=>reviews.product) 
+    reviews: ProductReviews[] ;
 
 }

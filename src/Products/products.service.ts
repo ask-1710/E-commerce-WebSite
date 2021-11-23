@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { User } from "src/Users/user.entity";
 import { Repository } from "typeorm";
+import { ProductReviews } from "./product.reviews.entity";
 import { Products } from './products.entity'
 import { ProductCategory } from "./product_categories.entity";
 
@@ -12,7 +14,11 @@ export class ProductService {
         @InjectRepository(Products)
         private readonly productsRepo: Repository<Products>,
         @InjectRepository(ProductCategory)
-        private readonly productCategoryRepo: Repository<ProductCategory>
+        private readonly productCategoryRepo: Repository<ProductCategory>,
+        @InjectRepository(ProductReviews)
+        private readonly productReviewsRepo: Repository<ProductReviews>,
+        @InjectRepository(User)
+        private readonly usersRepo: Repository<User>,
     ) {}
 
     getProducts(): Promise<Products[]> {
@@ -66,13 +72,29 @@ export class ProductService {
             price: price,
             category: newCategory,
             qty: qty,
-            // orders: []
         }) ;
         
         await this.productsRepo.save(pdt) ;
         
     }
 
+    async getPdtReviews(prodID: number): Promise<Products[]> {
+        return await this.productsRepo.find({where:{id: prodID}, relations:['reviews']}) ;        
+    }
+
+    async addReview(prodID:number, descr: string, userID: number, rating:number) {
+        const pdt = await this.productsRepo.findOne(prodID) ;
+        const user = await this.usersRepo.findOne(userID) ;
+        
+        const pdtReview = new ProductReviews() ;
+        pdtReview.product=pdt;
+        pdtReview.description=descr;
+        pdtReview.rating=rating;
+        pdtReview.user = user ;
+
+        await this.productReviewsRepo.save(pdtReview) ;
+    }
+    
     async updateById(id:number, name:string, descr:string, price:number, categoryname: string) {
         const pdt = await this.findProduct(id) ;
         let updatedPdt = {...pdt}
@@ -98,8 +120,7 @@ export class ProductService {
             await this.productCategoryRepo.save(newCategory) ; 
         }
 
-        await this.productsRepo.save(updatedPdt) ;            
-
+        await this.productsRepo.save(updatedPdt) ;           
     }
 
     async deleteById(prodId : number) {

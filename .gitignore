@@ -5,6 +5,9 @@
 #TODO
 /todo
 
+#OBJECTS
+/objects
+
 # Logs
 logs
 *.log

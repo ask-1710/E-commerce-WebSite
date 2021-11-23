@@ -10,6 +10,7 @@ import { OrdersModule } from './Orders/orders.module' ;
 import { TrackOrder } from './Tracking/trackOrder.entity';
 import { OrderDetails } from './Orders/orderdetails.entity';
 import { TrackerModule } from './Tracking/trackOrder.module';
+import { ProductReviews } from './Products/product.reviews.entity';
 
 
 @Module({
@@ -30,7 +31,7 @@ import { TrackerModule } from './Tracking/trackOrder.module';
       username: 'aarthi',
       password: 'Hanuman2001$',
       database: 'ecommsite',
-      entities: [ Products, User , ProductCategory, TrackOrder, OrderDetails, Orders ],
+      entities: [ Products, User , ProductCategory, TrackOrder, OrderDetails, Orders , ProductReviews ],
       synchronize: true,
     }),
 

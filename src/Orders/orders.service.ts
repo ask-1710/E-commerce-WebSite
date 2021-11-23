@@ -39,21 +39,19 @@ export class OrdersService {
         return amount ;
     }
 
-    async getProductsOrdered(orderdetailId: number):Promise<OrderDetails[]> {
+    async getProductsOrdered(orderId: number):Promise<OrderDetails[]> {
         //  RETURNS THE PRODUCTS ORDERED GIVEN THE ORDER DETAILS ID 
-            const detail =  await this.orderDetailsRepo.findOne(orderdetailId) ;
-            // console.log(details) ;
-            const prod = this.orderDetailsRepo.find({relations:['products']}) ;
-            // const products = await this.orderDetailsRepo.find({where:{id: detailId},relations:['products']}) ;
+            const prod = await this.orderDetailsRepo.find({relations:['products'], where: {id: orderId}}) ;
             return prod ;
     }
     
     async getOrderDetails(orderId: number):Promise<Orders[]> {
-    //  RETURNS THE DETAILS GIVEN THE ORDER ID 
-        const order =  await this.ordersRepo.findOne(orderId) ;
-        // console.log(details) ;
-        const details = this.ordersRepo.find({relations:['details']}) ;
-        // const products = await this.orderDetailsRepo.find({where:{id: detailId},relations:['products']}) ;
+        //  RETURNS THE DETAILS GIVEN THE ORDER ID 
+        const details = await this.ordersRepo.createQueryBuilder("order")
+                                        .leftJoinAndSelect("order.details", "details")
+                                        .where("order.orderID LIKE :orderId", {orderId})
+                                        .getMany(); 
+                                        
         return details ;
     }
 
@@ -64,17 +62,15 @@ export class OrdersService {
         
         for (var i=0;i<productIDs.length;i++) {
             const pid = productIDs[i] ;
-            console.log(pid) ;
             let pdt = await this.productsRepo.findOne(pid) ;
-            console.log(pdt) ;
             _orderedProducts.push(pdt) ;
         }
         _orderedProducts.splice(0,1) ;
 
         let orderAmt = await this.generateOrderAmount(_orderedProducts, qty, orderTax) ;
-        console.log(orderAmt) ; 
+        // console.log(orderAmt) ; 
         let user = await this.usersRepo.findOne(userID) ;
-        console.log(user) ;
+        // console.log(user) ;
        
         let newDetails = this.orderDetailsRepo.create({
             products: _orderedProducts,
@@ -83,20 +79,8 @@ export class OrdersService {
             orderTax: orderTax,
         });
 
-        console.log(newDetails) ;
-        
-        // {
-        //     "userid":1,
-        //     "products":[8,9], 
-        //     "qty": [2,2], 
-        //     "seller":"pankaj", 
-        //     "orderCity":"surat", 
-        //     "orderCountry":"India", 
-        //     "orderTax": 34, 
-        //     "orderShipAddr":"42./surat", 
-        //     "orderState":"Gujarat"
-        // }
-    
+        // console.log(newDetails) ;
+            
         const trackingInfo = this.trackOrderRepo.create({
             orderCity:orderCity,
             orderCountry:orderCountry,
@@ -104,7 +88,7 @@ export class OrdersService {
             orderState: orderState,
         });
 
-        console.log(trackingInfo) ;
+        // console.log(trackingInfo) ;
         
         const order = this.ordersRepo.create({
             user: user,
@@ -112,12 +96,12 @@ export class OrdersService {
             trackOrder: trackingInfo,
         });
 
-        console.log(order) ;
+        // console.log(order) ;
 
         await this.ordersRepo.save(order) ;
 
         const pdts = await this.orderDetailsRepo.find({relations: ['products']}) ;
-        console.log(pdts) ;
+        // console.log(pdts) ;
 
     }
        
@@ -150,3 +134,4 @@ export class OrdersService {
     }
 
 }
+
