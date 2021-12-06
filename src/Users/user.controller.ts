@@ -17,8 +17,8 @@ export class UserController {
     }
 
     @Patch(':id')
-    updateUser(@Param('id') userId:number, @Body('email') email:string, @Body('mobile') mobile:string ,@Body('password') password:string, @Body('permanent_addr') permaddr:string, @Body('city') city:string, @Body('pincode') pincode:string, @Body('state') state:string, @Body('country') country:string, @Body('cardId') cardID:string) {
-        this.userService.updateById(userId,email,mobile,password,permaddr,city,pincode,state,country,cardID);
+    updateUser(@Param('id') userId:number, @Body('email') email:string, @Body('mobile') mobile:string, @Body('permanent_addr') permaddr:string, @Body('city') city:string, @Body('pincode') pincode:string, @Body('state') state:string, @Body('country') country:string, @Body('cardId') cardID:string) {
+        this.userService.updateById(userId,email,mobile,permaddr,city,pincode,state,country,cardID);
         return null ;
     }
 

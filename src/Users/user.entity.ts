@@ -1,6 +1,7 @@
 import { Orders } from 'src/Orders/orders.entity';
 import { ProductReviews } from 'src/Products/product.reviews.entity';
-import { Column, Entity, PrimaryGeneratedColumn , OneToOne , OneToMany, CreateDateColumn, DeleteDateColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn , OneToMany, CreateDateColumn, DeleteDateColumn, BeforeInsert } from 'typeorm';
+const bcrypt = require("bcrypt");
 
 @Entity()
 export class User {
@@ -23,12 +24,15 @@ export class User {
     @Column()
     email: string ;
 
+    @Column({ 
+        type: 'varchar', 
+        nullable: false 
+    }) 
+    password: string; 
+
     @Column({length: 10})
     mobile: string ;
-
-    @Column()
-    password: string;
-
+    
     @Column()
     permanent_addr: string;
 
@@ -59,7 +63,12 @@ export class User {
     @OneToMany(type=>ProductReviews, review=>review.user) 
     reviews: ProductReviews[] ;
 
-}
+    @BeforeInsert()  
+    async hashPassword() {
+        this.password = await bcrypt.hash(this.password, 10);  
+    }
+
+}  
 
 
 // {

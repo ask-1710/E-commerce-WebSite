@@ -11,7 +11,12 @@ import { TrackOrder } from './Tracking/trackOrder.entity';
 import { OrderDetails } from './Orders/orderdetails.entity';
 import { TrackerModule } from './Tracking/trackOrder.module';
 import { ProductReviews } from './Products/product.reviews.entity';
+import { AuthModule } from './auth/auth.module';
+import { AppController } from './app.controller' ;
+import { AppService } from './app.service';
 
+const dotenv = require('dotenv') ;
+dotenv.config() ;
 
 @Module({
   imports: [
@@ -24,20 +29,22 @@ import { ProductReviews } from './Products/product.reviews.entity';
 
     TrackerModule,
 
+    AuthModule,
+
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
       port: 3306,
-      username: 'aarthi',
-      password: 'Hanuman2001$',
-      database: 'ecommsite',
+      username: process.env.USERNAME,
+      password: process.env.PASSWORD,
+      database: process.env.DATABASE_NAME,
       entities: [ Products, User , ProductCategory, TrackOrder, OrderDetails, Orders , ProductReviews ],
       synchronize: true,
     }),
 
-],
-  // controllers: [AppController],
-  // providers: [AppService], // service for AppController -> passed in constructor in Controller class
+  ],
+  controllers: [AppController],
+  providers: [AppService], // service for AppController -> passed in constructor in Controller class
 })
 
 

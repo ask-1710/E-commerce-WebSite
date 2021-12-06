@@ -8,6 +8,15 @@
 #OBJECTS
 /objects
 
+# Payment - Razor Pay
+src/payment
+
+# Client
+shopping-client
+
+#Test
+test/
+
 # Logs
 logs
 *.log
@@ -39,3 +48,8 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+
+.env
+
+yarn.lock
