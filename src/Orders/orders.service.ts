@@ -129,7 +129,8 @@ export class OrdersService {
     }
 
     async getOrdersByUID(userId:number) {
-        const user = await this.usersRepo.findOne(userId, {relations: ['orders']}) ;
+        const user = await this.usersRepo.findOne(userId, {relations: ['orders','orders.details','orders.details.products']}) ;
+
         return user ; 
     }
 
