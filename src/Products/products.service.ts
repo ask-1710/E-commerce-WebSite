@@ -73,7 +73,7 @@ export class ProductService {
             category: newCategory,
             qty: qty,
         }) ;
-        
+        console.log('\n\n Gonna be saved \n\n');
         await this.productsRepo.save(pdt) ;
         
     }

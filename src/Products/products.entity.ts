@@ -26,7 +26,7 @@ export class Products {
     @Column()
     qty: number;
 
-    @Column()
+    @Column({default: 0})
     rating: number ;
 
     @ManyToOne(type=>ProductCategory, pdtCategory=>pdtCategory.products, {cascade: ["insert", "update"]})

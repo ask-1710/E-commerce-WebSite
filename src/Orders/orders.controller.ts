@@ -1,12 +1,16 @@
-import { Controller, Post ,Body, Get ,Param,Patch,Delete } from "@nestjs/common";
-import { Orders } from "./orders.entity";
+import { Controller, Post ,Body, Get ,Param,Patch,Delete, UseGuards } from "@nestjs/common";
+import { JwtAuthGuard } from "src/auth/jwt-auth.gaurd";
 import { OrdersService } from "./orders.service";
+import { Request } from "@nestjs/common";
+import { User } from "src/Users/user.entity";
 
 @Controller('orders')
 export class OrdersController {
-    constructor(private readonly orderService: OrdersService) {}
+    constructor(
+        private readonly orderService: OrdersService
+    ) {}
     
-    @Get()
+    @Get('/all')
     getallOrders() {
         return this.orderService.getAllOrders();
     }
@@ -21,14 +25,18 @@ export class OrdersController {
         return this.orderService.getOrderDetails(orderId) ;
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post()
-    addProduct(@Body('UserID') userid:number,@Body('products') products:number[], @Body('qty') qty: number[], @Body('seller') seller:string, @Body('orderCity') orderCity:string,@Body('orderCountry') orderCountry:string,@Body('orderTax') orderTax: number,@Body('orderShipAddr') orderShipAddr:string,@Body('orderState') orderState:string) {
-        this.orderService.insertOrders(userid , products, qty, seller, orderCity, orderCountry, orderTax, orderShipAddr, orderState) ;
+    makeOrder(@Request() req, @Body('products') products:number[], @Body('qty') qty: number[], @Body('seller') seller:string, @Body('orderCity') orderCity:string,@Body('orderCountry') orderCountry:string,@Body('orderTax') orderTax: number,@Body('orderShipAddr') orderShipAddr:string,@Body('orderState') orderState:string) {
+        let user = req.user ;
+        this.orderService.insertOrders(user.id , products, qty, seller, orderCity, orderCountry, orderTax, orderShipAddr, orderState) ;
     }
 
-    @Get(':id') 
-    getProductbyId(@Param('id') userID: number): Promise<Orders[]> {
-        return this.orderService.getOrdersByUID(userID);
+    @UseGuards(JwtAuthGuard)
+    @Get() 
+    getProductbyId(@Request() req): Promise<User> {
+        console.log(req.user.id) ; 
+        return this.orderService.getOrdersByUID(req.user.id) ;
     }
 
     // @Patch(':id')
@@ -42,5 +50,6 @@ export class OrdersController {
         this.orderService.deleteById(orderId);
         return null ;
     }
+
 }
 

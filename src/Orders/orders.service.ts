@@ -23,7 +23,7 @@ export class OrdersService {
     ) {}
 
     getAllOrders() {
-        return this.ordersRepo.find({relations: ['user']}) ;
+        return this.ordersRepo.find() ;
     } 
 
     private async generateOrderAmount(products:Products[], qty: number[], tax: number):Promise<number> {
@@ -129,8 +129,8 @@ export class OrdersService {
     }
 
     async getOrdersByUID(userId:number) {
-        const user = await this.usersRepo.findOne(userId) ;
-        return user.orders ; 
+        const user = await this.usersRepo.findOne(userId, {relations: ['orders']}) ;
+        return user ; 
     }
 
 }

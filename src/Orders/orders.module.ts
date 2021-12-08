@@ -7,10 +7,14 @@ import { TrackOrder } from "src/Tracking/trackOrder.entity";
 import { OrdersController } from "./orders.controller";
 import { OrdersService } from "./orders.service";
 import { User } from "src/Users/user.entity";
+import { AuthModule } from "src/auth/auth.module";
 
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Orders, OrderDetails, Products, TrackOrder, User])],
+    imports: [
+        TypeOrmModule.forFeature([Orders, OrderDetails, Products, TrackOrder, User]), 
+        AuthModule,
+    ],
     controllers: [OrdersController],
     providers: [OrdersService],
 })
