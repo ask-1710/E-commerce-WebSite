@@ -1,3 +1,4 @@
+import { User } from 'src/Users/user.entity';
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ProductReviews } from './product.reviews.entity';
 import { ProductCategory } from './product_categories.entity';
@@ -29,10 +30,13 @@ export class Products {
     @Column({default: 0})
     rating: number ;
 
-    @ManyToOne(type=>ProductCategory, pdtCategory=>pdtCategory.products, {cascade: ["insert", "update"]})
+    @ManyToOne(type=>ProductCategory, pdtCategory=>pdtCategory.products, {cascade: ["insert", "update"]})  // change ownership if needed -> old retained till now
     category: ProductCategory; 
 
     @OneToMany(type=>ProductReviews,reviews=>reviews.product) 
     reviews: ProductReviews[] ;
 
+    @ManyToOne(type=>User, user=>user.products)
+    seller: User ; 
+    
 }

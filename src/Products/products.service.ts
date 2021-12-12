@@ -62,20 +62,35 @@ export class ProductService {
         return newCategory ;
     }
     
-    async insertProduct(name: string, description:string, price: number, categoryname: string, qty: number) {
+    async insertProduct(userId: number,name: string, description:string, price: number, categoryname: string, qty: number) {
         
         let newCategory = await this.findCategory(categoryname) ;
-        
+        let user = await this.usersRepo.findOne(userId, {
+            relations: ['products'],
+        }) ;
         const pdt = this.productsRepo.create({
             name: name,
             description: description,
             price: price,
             category: newCategory,
             qty: qty,
+            seller: user,
         }) ;
+        if(!user.products) {
+            user.products = [pdt] ;
+            console.log('Created your new list of products!!') ;
+        }
+        else {
+            user.products.push(pdt) ;
+            console.log('Added new Product by you!!') ;
+        }
         console.log('\n\n Gonna be saved \n\n');
-        await this.productsRepo.save(pdt) ;
-        
+        await this.usersRepo.save(user) ;
+
+        return await this.usersRepo.findOne(userId,{
+            relations: ['products'],
+        });
+    
     }
 
     async getPdtReviews(prodID: number): Promise<Products[]> {
@@ -94,11 +109,20 @@ export class ProductService {
 
         await this.productReviewsRepo.save(pdtReview) ;
     }
-    
-    async updateById(id:number, name:string, descr:string, price:number, categoryname: string) {
-        const pdt = await this.findProduct(id) ;
-        let updatedPdt = {...pdt}
-        let newCategory: ProductCategory;
+
+    async getMyProducts(userId: number) {
+        return await this.usersRepo.findOne(userId,{
+            relations:['products','products.category','products.reviews'],
+        }) ;
+    }
+
+    async updateById(userId:number, id:number, name:string, descr:string, price:number) {  // cannot change category -> limitation
+
+        const pdt = await this.productsRepo.findOne(id, {
+            relations: ['category', 'category.products'],
+        }) ;
+        let updatedPdt = {...pdt} ;
+        
         if (name) {
             updatedPdt.name = name ;
         }
@@ -108,30 +132,63 @@ export class ProductService {
         if(price) {
             updatedPdt.price = price ;
         }
-        if(categoryname) {
-            // remove from old category
-            let oldCategory = {...updatedPdt.category} ;
-            oldCategory.products.slice(oldCategory.products.indexOf(pdt),1) ;
-            await this.productCategoryRepo.save(oldCategory) ;
-            // add to new category
-            newCategory = await this.findCategory(categoryname) ;
-            updatedPdt.category = newCategory ;
-            newCategory.products.push(updatedPdt) ; 
-            await this.productCategoryRepo.save(newCategory) ; 
-        }
 
-        await this.productsRepo.save(updatedPdt) ;           
+        let user = await  this.usersRepo.findOne(userId, {
+            relations: ['products'],
+        });
+        var idx: number ;
+        for(idx=0;idx<user.products.length ; idx++) {
+            if(user.products[idx].id==id) {
+                user.products[idx] = updatedPdt ;
+                break ;
+            }
+        }
+        
+        await this.usersRepo.save(user) ;        
+        await this.productsRepo.save(updatedPdt) ;   
+                
+        return await this.productsRepo.findOne(id, {
+            relations: ['category'],
+        }) ;
     }
 
-    async deleteById(prodId : number) {
+    async deleteById(userId:number, prodId : number) {
+        let user = await this.usersRepo.findOne(userId, {
+            relations: ['products'],
+        }) ;
+        let pdt = await this.productsRepo.findOne(prodId, {
+            relations: ['category','category.products'],
+        }) ;
+        var idx: number ;
 
-        let pdt = await this.findProduct(prodId) ;
         // remove from old category
         let oldCategory = {...pdt.category} ;
-        oldCategory.products.slice(oldCategory.products.indexOf(pdt),1) ;
+
+        console.log(oldCategory) ;
+        for(idx=0;idx<oldCategory.products.length ; idx++) {
+            if(oldCategory.products[idx].id == prodId) {
+                break ;
+            }
+        }        
+        oldCategory.products.splice(idx,1) ;
+        console.log(oldCategory) ;
+
         await this.productCategoryRepo.save(oldCategory) ;
 
-        await this.productsRepo.delete({id: prodId}) ;
+        console.log(user.products) ;
+        for(idx=0;idx<user.products.length;idx++) {
+            if(user.products[idx].id == prodId) break;
+        }
+        user.products.splice(idx, 1) ;
+        console.log(user.products) ;
+
+        await this.usersRepo.save(user) ;
+
+        await this.productsRepo.delete({id:prodId}) ;
+
+        return await this.usersRepo.findOne(userId, {
+            relations:['products','products.category'],
+        }) ;
 
     }
 

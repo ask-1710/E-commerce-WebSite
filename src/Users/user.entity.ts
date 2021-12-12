@@ -1,5 +1,6 @@
 import { Orders } from 'src/Orders/orders.entity';
 import { ProductReviews } from 'src/Products/product.reviews.entity';
+import { Products } from 'src/Products/products.entity';
 import { WishList } from 'src/wishlist/wishlist.entity';
 import { Column, Entity, PrimaryGeneratedColumn , OneToMany, CreateDateColumn, DeleteDateColumn, BeforeInsert, OneToOne, JoinColumn } from 'typeorm';
 const bcrypt = require("bcrypt");
@@ -67,29 +68,14 @@ export class User {
     @OneToOne(type=>WishList, wishlist=>wishlist.id)
     wishlist: WishList ;
 
+    @OneToMany(type=>Products, products=>products.seller, { 
+        cascade: ['insert','update','remove'],
+    })
+    products: Products[] ;
+
     @BeforeInsert()  
     async hashPassword() {
         this.password = await bcrypt.hash(this.password, 10);  
     }
 
 }  
-
-
-// {
-//     "id": 1,
-//     "firstName": "mania",
-//     "middleName": " ",
-//     "lastName": "Singh",
-//     "DOB": "14/04/14",
-//     "email": "ma@gmail.com",
-//     "mobile": "432422313",
-//     "password": "padnai",
-//     "permanent_addr": "3/411, murat street",
-//     "city": "chennai",
-//     "pincode": "600006",
-//     "state": "TN",
-//     "country": "India",
-//     "registrationDate": "2021-11-22T08:58:09.261Z",
-//     "cardId": "SD213",
-//     "deleteTime": null
-// }
