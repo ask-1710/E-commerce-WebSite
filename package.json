@@ -29,6 +29,7 @@
     "@nestjs/typeorm": "^8.0.2",
     "@types/passport": "^1.0.7",
     "bcrypt": "^5.0.1",
+    "check-password-strength": "^2.0.3",
     "class-validator": "^0.13.2",
     "dotenv": "^10.0.0",
     "mysql2": "^2.3.3",

@@ -1,4 +1,5 @@
-import { Controller, Get, Param } from "@nestjs/common";
+import { Controller, Get, Param, UseGuards, Request } from "@nestjs/common";
+import { JwtAuthGuard } from "src/auth/jwt-auth.gaurd";
 import { TrackerService } from "./trackOrder.service";
 
 @Controller('trackOrder')
@@ -12,8 +13,9 @@ export class TrackerController {
         return this.trackerService.getAll() ;
     }
 
-    @Get(':id')
-    getTrackingInfoByOrder(@Param('id') orderId:number) {
+    @UseGuards(JwtAuthGuard)
+    @Get('/:id')
+    getTrackingInfoByOrder(@Request() req, @Param('id') orderId:number) {
         return this.trackerService.getTackingDetailsByOrderID(orderId) ;
     }
 

@@ -1,6 +1,7 @@
 import { Orders } from 'src/Orders/orders.entity';
 import { ProductReviews } from 'src/Products/product.reviews.entity';
-import { Column, Entity, PrimaryGeneratedColumn , OneToMany, CreateDateColumn, DeleteDateColumn, BeforeInsert } from 'typeorm';
+import { WishList } from 'src/wishlist/wishlist.entity';
+import { Column, Entity, PrimaryGeneratedColumn , OneToMany, CreateDateColumn, DeleteDateColumn, BeforeInsert, OneToOne, JoinColumn } from 'typeorm';
 const bcrypt = require("bcrypt");
 
 @Entity()
@@ -30,7 +31,7 @@ export class User {
     }) 
     password: string; 
 
-    @Column({length: 10})
+    @Column({length: 10, unique:true})
     mobile: string ;
     
     @Column()
@@ -62,6 +63,9 @@ export class User {
 
     @OneToMany(type=>ProductReviews, review=>review.user) 
     reviews: ProductReviews[] ;
+
+    @OneToOne(type=>WishList, wishlist=>wishlist.id)
+    wishlist: WishList ;
 
     @BeforeInsert()  
     async hashPassword() {

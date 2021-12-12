@@ -2,6 +2,7 @@ import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from './user.entity'
+import { passwordStrength } from 'check-password-strength' ;
 
 @Injectable()
 export class UserService {
@@ -67,6 +68,21 @@ export class UserService {
         
         await this.usersRepo.delete({id: userID}) ;
 
+    }
+
+    private checkPassword(password:string) {
+        console.log('Password is ',passwordStrength(password).value)
+        return passwordStrength(password).value ;
+    }
+
+    async changePassword(userId:number, password:string) {
+        const val = this.checkPassword(password) ;
+        if(val == 'Weak' || val=='Too weak') {
+            return 'Use a stronger password !!' ;
+        }
+        const user = await this.usersRepo.findOne(userId) ;
+        user.password = password ;
+        return 'Password changed !!' ;        
     }
 
 }
