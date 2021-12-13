@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Seller } from "src/Users/seller.entity";
 import { User } from "src/Users/user.entity";
 import { Repository } from "typeorm";
 import { ProductReviews } from "./product.reviews.entity";
@@ -19,6 +20,8 @@ export class ProductService {
         private readonly productReviewsRepo: Repository<ProductReviews>,
         @InjectRepository(User)
         private readonly usersRepo: Repository<User>,
+        @InjectRepository(Seller)
+        private readonly sellerRepo: Repository<Seller>,
     ) {}
 
     getProducts(): Promise<Products[]> {
@@ -65,8 +68,13 @@ export class ProductService {
     async insertProduct(userId: number,name: string, description:string, price: number, categoryname: string, qty: number) {
         
         let newCategory = await this.findCategory(categoryname) ;
-        let user = await this.usersRepo.findOne(userId, {
-            relations: ['products'],
+        let user = await this.sellerRepo.findOne({
+            where: {
+                "userId":{
+                    "id": userId,
+                },
+            },
+            relations: ['products','userId'],
         }) ;
         const pdt = this.productsRepo.create({
             name: name,
@@ -85,10 +93,18 @@ export class ProductService {
             console.log('Added new Product by you!!') ;
         }
         console.log('\n\n Gonna be saved \n\n');
-        await this.usersRepo.save(user) ;
+
+        // let mainUser = await this.usersRepo.findOne(userId, {
+        //     relations: ['sellerAccount'],
+        // }) ;
+        // mainUser.sellerAccount = user ;
+        
+        // await this.usersRepo.save(mainUser) ;
+
+        await this.sellerRepo.save(user) ;
 
         return await this.usersRepo.findOne(userId,{
-            relations: ['products'],
+            relations: ['products','sellerAccount'],
         });
     
     }
@@ -97,7 +113,8 @@ export class ProductService {
         return await this.productsRepo.find({where:{id: prodID}, relations:['reviews']}) ;        
     }
 
-    async addReview(prodID:number, descr: string, userID: number, rating:number) {
+    async addReview(prodID:number, descr: string, userID: number, rating:number) // add automatic review JwtauthGaurd
+    {
         const pdt = await this.productsRepo.findOne(prodID) ;
         const user = await this.usersRepo.findOne(userID) ;
         
@@ -111,8 +128,13 @@ export class ProductService {
     }
 
     async getMyProducts(userId: number) {
-        return await this.usersRepo.findOne(userId,{
-            relations:['products','products.category','products.reviews'],
+        return await this.sellerRepo.findOne({
+            where: {
+                "userId":{
+                    "id": userId,
+                },
+            },
+            relations:['products','products.category','products.reviews','userId'],
         }) ;
     }
 
@@ -133,8 +155,13 @@ export class ProductService {
             updatedPdt.price = price ;
         }
 
-        let user = await  this.usersRepo.findOne(userId, {
-            relations: ['products'],
+        let user = await  this.sellerRepo.findOne({
+            where: {
+                "userId":{
+                    "id": userId,
+                },
+            },
+            relations: ['products','userId'],
         });
         var idx: number ;
         for(idx=0;idx<user.products.length ; idx++) {
@@ -144,7 +171,7 @@ export class ProductService {
             }
         }
         
-        await this.usersRepo.save(user) ;        
+        await this.sellerRepo.save(user) ;        
         await this.productsRepo.save(updatedPdt) ;   
                 
         return await this.productsRepo.findOne(id, {
@@ -152,10 +179,16 @@ export class ProductService {
         }) ;
     }
 
-    async deleteById(userId:number, prodId : number) {
-        let user = await this.usersRepo.findOne(userId, {
-            relations: ['products'],
-        }) ;
+    async deleteById(userId:number, prodId : number) {        
+        let user = await  this.sellerRepo.findOne({
+            where: {
+                "userId":{
+                    "id": userId,
+                },
+            },
+            relations: ['products','userId'],
+        });
+
         let pdt = await this.productsRepo.findOne(prodId, {
             relations: ['category','category.products'],
         }) ;
@@ -182,13 +215,19 @@ export class ProductService {
         user.products.splice(idx, 1) ;
         console.log(user.products) ;
 
-        await this.usersRepo.save(user) ;
+        await this.sellerRepo.save(user) ;
 
         await this.productsRepo.delete({id:prodId}) ;
 
-        return await this.usersRepo.findOne(userId, {
-            relations:['products','products.category'],
-        }) ;
+
+        return await  this.sellerRepo.findOne({
+            where: {
+                "userId":{
+                    "id": userId,
+                },
+            },
+            relations: ['products','userId','products.category'],
+        });
 
     }
 

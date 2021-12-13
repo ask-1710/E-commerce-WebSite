@@ -39,4 +39,9 @@ export class UserController {
         return this.userService.changePassword(req.user.id, password) ;
     }
     
+    @UseGuards(JwtAuthGuard)
+    @Post('/mysellerAccount/')
+    createSellerAccount(@Request() req, @Body('pickupAddr') pickupAddr: string, @Body('pickupCity') pickupCity: string, @Body('pickupState') pickupState: string, @Body('pickupCountry') pickupCountry: string, @Body('pickupPincode') pickupPincode: string, @Body('cardId') pancardId:string ) {
+        return this.userService.createSellerAccount(req.user.id, pickupAddr, pickupCity, pickupPincode, pickupState, pickupCountry, pancardId) ;        
+    }
 }

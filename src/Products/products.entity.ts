@@ -1,5 +1,5 @@
-import { User } from 'src/Users/user.entity';
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Seller } from 'src/Users/seller.entity';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ProductReviews } from './product.reviews.entity';
 import { ProductCategory } from './product_categories.entity';
 
@@ -35,8 +35,7 @@ export class Products {
 
     @OneToMany(type=>ProductReviews,reviews=>reviews.product) 
     reviews: ProductReviews[] ;
-
-    @ManyToOne(type=>User, user=>user.products)
-    seller: User ; 
     
+    @ManyToOne(type=>Seller, seller=>seller.products)
+    seller: Seller ;
 }

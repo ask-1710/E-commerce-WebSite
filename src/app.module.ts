@@ -16,6 +16,7 @@ import { AppController } from './app.controller' ;
 import { AppService } from './app.service';
 import { WishListModule } from './wishlist/wishlist.module';
 import { WishList } from './wishlist/wishlist.entity';
+import { Seller } from './Users/seller.entity';
 
 const dotenv = require('dotenv') ;
 dotenv.config() ;
@@ -42,7 +43,7 @@ dotenv.config() ;
       username: process.env.USERNAME,
       password: process.env.PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [ Products, User , ProductCategory, TrackOrder, OrderDetails, Orders , ProductReviews, WishList ],
+      entities: [ Products, User , ProductCategory, TrackOrder, OrderDetails, Orders , ProductReviews, WishList, Seller ],
       synchronize: true,
     }),
 

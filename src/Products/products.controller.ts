@@ -1,7 +1,6 @@
 import { Controller, Post ,Body, Get ,Param,Patch,Delete, UseGuards , Request} from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/jwt-auth.gaurd";
 import { Products } from "./products.entity";
-// import { ProductCategory  } from "./product_categories.entity";
 import { ProductService } from "./products.service";
 
 @Controller('products')

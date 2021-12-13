@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from './user.entity'
 import { passwordStrength } from 'check-password-strength' ;
+import { Seller } from "./seller.entity";
 
 @Injectable()
 export class UserService {
@@ -10,6 +11,8 @@ export class UserService {
     constructor(
         @InjectRepository(User)
         private readonly usersRepo: Repository<User>,
+        @InjectRepository(Seller)
+        private readonly sellerRepo: Repository<Seller>,
         
     ) {}
 
@@ -83,6 +86,25 @@ export class UserService {
         const user = await this.usersRepo.findOne(userId) ;
         user.password = password ;
         return 'Password changed !!' ;        
+    }
+
+    async createSellerAccount(userId: number, pickupAddr: string, pickupCity: string, pickupPincode: string, pickupState: string, pickupCountry: string, pancardId: string) {
+        const user = await this.usersRepo.findOne(userId) ;
+        let seller = this.sellerRepo.create({
+            userId: user,
+            pickupAddr: pickupAddr,
+            pickupCity: pickupCity,
+            pickupPincode: pickupPincode,
+            pickupState: pickupState,
+            pickupCountry: pickupCountry,
+            pancardId: pancardId
+        }) ;
+
+        await this.sellerRepo.save(seller) ;
+
+        return await this.usersRepo.findOne(userId, {
+            relations: ['sellerAccount'],
+        }) ;
     }
 
 }
