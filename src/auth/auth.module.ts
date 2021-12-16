@@ -1,12 +1,15 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { ShopperAuthService } from './shopper-auth.service';
 import { TypeOrmModule  } from "@nestjs/typeorm";
 import { User } from '../Users/user.entity' ;
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './local.strategy';
+import { ShopperLocalStrategy } from './shopper-local.strategy';
+import { SellerLocalStrategy} from './seller-local.strategy' ;
 import { JwtModule } from '@nestjs/jwt' ;
 import { jwtConstants } from './constants';
-import { JwtStrategy } from './jwt.strategy';
+import { SellerJwtStrategy } from './seller-jwt.strategy' ;
+import { ShopperJwtStrategy } from './shopper-jwt.strategy' ;
+import { SellerAuthService } from './seller-auth.service';
 
 @Module({
   imports: [ 
@@ -17,7 +20,7 @@ import { JwtStrategy } from './jwt.strategy';
       signOptions: { expiresIn: '300s' },
     }),
   ],
-  providers: [AuthService, LocalStrategy , JwtStrategy],
-  exports: [AuthService],
+  providers: [ShopperAuthService, SellerLocalStrategy ,  SellerAuthService , ShopperLocalStrategy , ShopperJwtStrategy, SellerJwtStrategy ],
+  exports: [ShopperAuthService, SellerAuthService],
 })
 export class AuthModule {}

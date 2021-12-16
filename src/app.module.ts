@@ -49,7 +49,7 @@ dotenv.config() ;
 
   ],
   controllers: [AppController],
-  providers: [AppService], // service for AppController -> passed in constructor in Controller class
+  providers: [AppService], 
 })
 
 

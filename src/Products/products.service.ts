@@ -104,7 +104,7 @@ export class ProductService {
         await this.sellerRepo.save(user) ;
 
         return await this.usersRepo.findOne(userId,{
-            relations: ['products','sellerAccount'],
+            relations: ['sellerAccount', 'sellerAccount.products'],
         });
     
     }
@@ -116,6 +116,9 @@ export class ProductService {
     async addReview(prodID:number, descr: string, userID: number, rating:number) // add automatic review JwtauthGaurd
     {
         const pdt = await this.productsRepo.findOne(prodID) ;
+
+        if(!pdt) return new NotFoundException('Product Not Found') ;
+        
         const user = await this.usersRepo.findOne(userID) ;
         
         const pdtReview = new ProductReviews() ;
@@ -143,6 +146,10 @@ export class ProductService {
         const pdt = await this.productsRepo.findOne(id, {
             relations: ['category', 'category.products'],
         }) ;
+
+
+        if(!pdt) return new NotFoundException('Product Not Found') ;
+
         let updatedPdt = {...pdt} ;
         
         if (name) {
@@ -192,6 +199,9 @@ export class ProductService {
         let pdt = await this.productsRepo.findOne(prodId, {
             relations: ['category','category.products'],
         }) ;
+
+        if(!pdt) return new NotFoundException('Product Not Found') ;
+
         var idx: number ;
 
         // remove from old category

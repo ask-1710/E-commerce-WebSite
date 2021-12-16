@@ -2,7 +2,6 @@ import { Products } from 'src/Products/products.entity';
 import { ProductCategory } from 'src/Products/product_categories.entity';
 import { Column, Entity, PrimaryGeneratedColumn , OneToMany, CreateDateColumn, DeleteDateColumn, BeforeInsert, OneToOne, JoinColumn, ManyToMany } from 'typeorm';
 import { User } from './user.entity';
-const bcrypt = require("bcrypt");
 
 @Entity()
 export class Seller {
@@ -40,10 +39,5 @@ export class Seller {
         cascade: true,
     })
     products: Products[] ;
-
-    @BeforeInsert()  
-    async hashPanDetals() {
-        this.pancardId = await bcrypt.hash(this.pancardId, 10);  
-    }
 
 }  

@@ -1,24 +1,29 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../Users/user.entity' ;
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt' ;
+import { User } from 'src/Users/user.entity';
 
 const bcrypt = require('bcrypt') ;
 
 @Injectable()
-export class AuthService {
+export class SellerAuthService {
     
     constructor(
         @InjectRepository(User)
-        private readonly usersRepo: Repository<User>,
+        private readonly userRepo: Repository<User>,
         private readonly jwtService: JwtService ,
     ) {}
 
     async validateLogin(mobile:string, pass:string):Promise<any> {
-        let usr = await this.usersRepo.findOne({mobile: mobile})  ;
+
+        let usr = await this.userRepo.findOne({mobile: mobile}, {
+            relations: ['sellerAccount'],
+        }) ;
         
-        if(!usr) return null ;
+        if(!usr || !usr.sellerAccount) return null ;  // added check
+
+        // console.log('You have a seller account !! \n') ;
 
         const match = await bcrypt.compare(pass, usr.password);
         
@@ -30,7 +35,8 @@ export class AuthService {
     }
 
     async login(user: any) {
-        const payload = { username: user.mobile, sub: user.id };
+        // console.log(user.sellerAccount.pancardId) ;
+        const payload = { username: user.sellerAccount.pancardId, sub: user.id };
         return {
           access_token: this.jwtService.sign(payload),
         };

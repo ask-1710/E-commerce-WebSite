@@ -1,5 +1,6 @@
-import { Controller, Post ,Body, Get ,Param,Patch,Delete, UseGuards , Request} from "@nestjs/common";
-import { JwtAuthGuard } from "src/auth/jwt-auth.gaurd";
+import { Controller, Post ,Body, Get ,Param,Patch,Delete, UseGuards , Request, Req} from "@nestjs/common";
+import { SellerJwtAuthGuard } from "src/auth/seller-jwt-auth.gaurd";
+import { ShopperJwtAuthGuard } from "src/auth/shopper-jwt-auth.gaurd";
 import { Products } from "./products.entity";
 import { ProductService } from "./products.service";
 
@@ -7,7 +8,7 @@ import { ProductService } from "./products.service";
 export class ProductsController {
     constructor(private readonly pdtservice: ProductService) {}
     
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(SellerJwtAuthGuard)
     @Get('myproducts')
     getMyProducts(@Request() req) {
         return this.pdtservice.getMyProducts(req.user.id) ;
@@ -18,7 +19,7 @@ export class ProductsController {
         return this.pdtservice.getProducts();
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(SellerJwtAuthGuard)
     @Post()
     addProduct(@Request() req,@Body('name') prodTitle: string, @Body('description') prodDesc: string, @Body('price') prodPrice: number, @Body('category') categoryname: string, @Body('qty') qty: number) {
         return this.pdtservice.insertProduct(req.user.id, prodTitle, prodDesc, prodPrice, categoryname, qty);
@@ -39,13 +40,15 @@ export class ProductsController {
         return this.pdtservice.getPdtReviews(productId) ;
     }
 
+    @UseGuards(ShopperJwtAuthGuard)
     @Post(':id/reviews')
-    addProductReview(@Param('id') productId: number,@Body('description') descr: string, @Body('userID') userID:number, @Body('rating') rating:number ) {
+    addProductReview(@Request() req, @Param('id') productId: number,@Body('description') descr: string, @Body('rating') rating:number ) {
+        const userID = req.user.id ;
         this.pdtservice.addReview(productId,descr,userID,rating) ;
         return null ;
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(SellerJwtAuthGuard)
     @Patch()
     updateProduct(@Request() req, @Body('productid') pdtId:number, @Body('title') pdtTitle:string, @Body('description') descr: string, @Body('price') price: number) {
         const userId = req.user.id ;
@@ -53,7 +56,7 @@ export class ProductsController {
         
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(SellerJwtAuthGuard)
     @Delete() 
     deletePdt(@Request() req, @Body('productid') productId:number) {
         const userId = req.user.id ;

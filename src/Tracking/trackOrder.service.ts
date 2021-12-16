@@ -13,8 +13,15 @@ export class TrackerService {
         private readonly ordersRepo: Repository<Orders>,
     ) {}
 
-    async getAll() {
-        return await this.trackerRepo.find() ;
+    async getAll(userId: number) {
+        return await this.ordersRepo.find({
+            where:{
+                "user":{
+                    "id": userId,
+                },
+            },
+            relations: ['user','trackOrder'],
+        }) ;
     }
 
     async getTackingDetailsByOrderID(orderId: number): Promise<Orders[]> {
