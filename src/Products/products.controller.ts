@@ -11,7 +11,7 @@ export class ProductsController {
     @UseGuards(SellerJwtAuthGuard)
     @Get('myproducts')
     getMyProducts(@Request() req) {
-        return {result: this.pdtservice.getMyProducts(req.user.id)} ;
+    return this.pdtservice.getMyProducts(req.user.id) ;
     }
 
     @Get('products')
@@ -39,14 +39,14 @@ export class ProductController {
 
     @UseGuards(SellerJwtAuthGuard)
     @Delete(':id') 
-    deletePdt(@Request() req, @Param('productid') productId:number) {
+    deletePdt(@Request() req, @Param('id') productId:number) {
         const userId = req.user.id ;
         return this.pdtservice.deleteById(userId, productId);
     }
 
     @UseGuards(SellerJwtAuthGuard)
     @Patch(':id')
-    updateProduct(@Request() req, @Param('productid') pdtId:number, @Body('title') pdtTitle:string, @Body('description') descr: string, @Body('price') price: number) {
+    updateProduct(@Request() req, @Param('id') pdtId:number, @Body('title') pdtTitle:string, @Body('description') descr: string, @Body('price') price: number) {
         const userId = req.user.id ;
         return this.pdtservice.updateById(userId, pdtId, pdtTitle, descr, price);
         

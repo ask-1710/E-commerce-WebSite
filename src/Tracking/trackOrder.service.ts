@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { TrackOrder } from "./trackOrder.entity";
 import { Orders } from "src/Orders/orders.entity";
+import { User } from "src/Users/user.entity";
 
 @Injectable()
 export class TrackerService {
@@ -11,16 +12,14 @@ export class TrackerService {
         private readonly trackerRepo: Repository<TrackOrder> ,
         @InjectRepository(Orders)
         private readonly ordersRepo: Repository<Orders>,
+        @InjectRepository(User)
+        private readonly userRepo: Repository<User>,
     ) {}
 
     async getAll(userId: number) {
-        return await this.ordersRepo.find({
-            where:{
-                "user":{
-                    "id": userId,
-                },
-            },
-            relations: ['user','trackOrder','details','details.products','details.products.seller'],
+        return await this.userRepo.findOne(userId,
+        {
+            relations: ['orders','orders.trackOrder','orders.details'],
         }) ;
     }
 

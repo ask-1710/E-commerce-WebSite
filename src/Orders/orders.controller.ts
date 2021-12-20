@@ -42,14 +42,14 @@ export class OrderController {
     //     return this.orderService.getProductsOrdered(detId) ;
     // }
 
-    @Get('/:id') 
+    @Get(':id') 
     getOrderDetails(@Param('id') orderId: number) {
         return this.orderService.getOrderDetails(orderId) ;
     }
 
     @UseGuards(ShopperJwtAuthGuard)
     @Post()
-    makeOrder(@Request() req, @Body('products') products:number[], @Body('qty') qty: number[] , orderTax: number) {
+    makeOrder(@Request() req, @Body('products') products:number[], @Body('qty') qty: number[] , @Body('tax') orderTax: number) {
         let user = req.user ;
         return this.orderService.insertOrders(user.id , products, qty,orderTax) ;
     }

@@ -5,7 +5,7 @@ import { Request } from '@nestjs/common' ;
 import { SellerJwtAuthGuard } from "src/auth/seller-jwt-auth.gaurd";
 
 @Controller('users')
-export class UserController {
+export class UsersController {
     constructor(private readonly userService: UserService) {}
    
     @Get()
@@ -15,10 +15,11 @@ export class UserController {
 }
 
 @Controller('user') 
-export class User {
+export class UserController {
 
     constructor(private readonly userService: UserService) {}
 
+    @UseGuards(ShopperJwtAuthGuard)
     @Get()
     getUser(@Request() req) {
         return this.userService.findUser(req.user.id) ;
@@ -39,7 +40,7 @@ export class User {
 
     @UseGuards(ShopperJwtAuthGuard)
     @Delete() 
-    deletePdt(@Request() req) {
+    deleteUser(@Request() req) {
         return this.userService.deleteById(req.user.id);
         
     }
