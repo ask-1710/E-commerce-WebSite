@@ -1,4 +1,4 @@
-import { Seller } from 'src/Users/seller.entity';
+import { Seller } from '../Users/seller.entity';
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ProductReviews } from './product.reviews.entity';
 import { ProductCategory } from './product_categories.entity';

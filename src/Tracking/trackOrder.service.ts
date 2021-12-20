@@ -20,13 +20,13 @@ export class TrackerService {
                     "id": userId,
                 },
             },
-            relations: ['user','trackOrder'],
+            relations: ['user','trackOrder','details','details.products','details.products.seller'],
         }) ;
     }
 
     async getTackingDetailsByOrderID(orderId: number): Promise<Orders[]> {
         // const order = await this.ordersRepo.findOne(orderId) ;
-        const tracker = await this.ordersRepo.find({where: {orderID: orderId}, relations:['trackOrder']}) ;
+        const tracker = await this.ordersRepo.find({where: {orderID: orderId}, relations:['trackOrder', 'details','details.products','details.products.seller']}) ;
         return tracker ;
     }
     

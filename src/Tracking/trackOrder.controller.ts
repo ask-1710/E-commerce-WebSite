@@ -14,8 +14,8 @@ export class TrackerController {
         return this.trackerService.getAll(req.user.id) ;
     }
 
-    @Get()
-    getTrackingInfoByOrder(@Body('id') orderId:number) {
+    @Get('id')
+    getTrackingInfoByOrder(@Param('id') orderId:number) {
         return this.trackerService.getTackingDetailsByOrderID(orderId) ;
     }
 

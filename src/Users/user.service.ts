@@ -71,6 +71,8 @@ export class UserService {
         
         await this.usersRepo.delete({id: userID}) ;
 
+        return 'Your account is deleted !' ;
+
     }
 
     private checkPassword(password:string) {

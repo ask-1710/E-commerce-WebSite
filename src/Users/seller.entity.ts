@@ -1,5 +1,5 @@
-import { Products } from 'src/Products/products.entity';
-import { ProductCategory } from 'src/Products/product_categories.entity';
+import { Products } from '../Products/products.entity';
+import { ProductCategory } from '../Products/product_categories.entity';
 import { Column, Entity, PrimaryGeneratedColumn , OneToMany, CreateDateColumn, DeleteDateColumn, BeforeInsert, OneToOne, JoinColumn, ManyToMany } from 'typeorm';
 import { User } from './user.entity';
 

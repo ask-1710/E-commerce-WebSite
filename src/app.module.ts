@@ -44,6 +44,7 @@ dotenv.config() ;
       password: process.env.PASSWORD,
       database: process.env.DATABASE_NAME,
       entities: [ Products, User , ProductCategory, TrackOrder, OrderDetails, Orders , ProductReviews, WishList, Seller ],
+      migrations: [Products, User , ProductCategory, TrackOrder, OrderDetails, Orders , ProductReviews, WishList, Seller],
       synchronize: true,
     }),
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Header, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, Post, Render, Res, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Request } from '@nestjs/common';
 import { ShopperLocalAuthGuard } from './auth/shopper-local-auth.gaurd' ;
@@ -15,36 +15,52 @@ export class AppController {
     private readonly authService: ShopperAuthService,
     private readonly sellerAuthService: SellerAuthService,
   ) {}
-  
+
   @Get()
-  @Header('Content-Type','text/html')
-  getHello(): string {
-    return this.appService.getHello();
+  redirect(@Res() res) {
+    return res.redirect('login');
+  }
+
+  @Post('login/')
+  @Render('login')
+  chooseRole(@Res() res, @Body() role: string) {
+    if(role=='shopper')    
+        return res.redirect('/login/shopper') ;
+    else
+        return res.redirect('/login/seller') ;
   }
   
+  // @Get()
+  // @Render('index.hbs')
+  // getHelloMessage() {
+  //   return { result: 'Hello Real world!' } ;
+  // }
+  
   @UseGuards(ShopperLocalAuthGuard)
-  @Post('auth/login')
+  @Post('login/shopper')
   async shopperLogin(@Request() req) {
     return this.authService.login(req.user);
   }
+
+  @UseGuards(SellerLocalAuthGuard) 
+  @Post('login/seller')
+  async sellerLogin(@Request() req) {
+    return this.sellerAuthService.login(req.user) ;
+  }
   
-  @UseGuards(ShopperJwtAuthGuard)  // view my profile
-  @Get('my-shopper-profile')
+  @UseGuards(ShopperJwtAuthGuard) 
+  @Get('profile/shopper')
   getProfile(@Request() req) {
     return req.user;
   }
 
   @UseGuards(SellerJwtAuthGuard) 
-  @Get('my-seller-profile')
+  @Get('profile/seller')
   getSellerProfile(@Request() req) {
     return req.user ;
   }
 
-  @UseGuards(SellerLocalAuthGuard) 
-  @Post('auth/seller/login/')
-  async sellerLogin(@Request() req) {
-    return this.sellerAuthService.login(req.user) ;
-  }
 
 }
+
 

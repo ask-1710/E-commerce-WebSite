@@ -1,4 +1,4 @@
-import { Products } from "src/Products/products.entity";
+import { Products } from "../Products/products.entity";
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { Orders } from "./orders.entity";
 
@@ -12,9 +12,6 @@ export class OrderDetails {
 
     @Column()
     orderAmount: number;
-
-    @Column()
-    seller: string;
 
     @Column(CreateDateColumn)
     orderplacedDate: Date;

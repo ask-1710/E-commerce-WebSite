@@ -45,17 +45,17 @@ export class OrdersService {
             return prod ;
     }
     
-    async getOrderDetails(orderId: number):Promise<Orders[]> {
+    async getOrderDetails(orderId: number)  {
         //  RETURNS THE DETAILS GIVEN THE ORDER ID 
-        const details = await this.ordersRepo.createQueryBuilder("order")
-                                        .leftJoinAndSelect("order.details", "details")
-                                        .where("order.orderID LIKE :orderId", {orderId})
-                                        .getMany(); 
-                                        
+        const details = await this.orderDetailsRepo.findOne(orderId, 
+            {
+                relations: ['products','products.seller']
+            }) ;
+
         return details ;
     }
 
-    async insertOrders(userID:number,productIDs:number[], qty: number[], seller:string, orderCity:string, orderCountry:string, orderTax: number, orderShipAddr:string, orderState:string) {
+    async insertOrders(userID:number,productIDs:number[], qty: number[], orderTax: number) {
         let prod = new Products() ;
         let _orderedProducts= [prod]  ;
         // let someArray: Array<{ id: number, name: string }> = []
@@ -75,20 +75,24 @@ export class OrdersService {
         let newDetails = this.orderDetailsRepo.create({
             products: _orderedProducts,
             orderAmount: orderAmt,
-            seller: seller,
             orderTax: orderTax,
         });
 
         // console.log(newDetails) ;
-            
+
+        var myCurrentDate=new Date();
+        var myFutureDate=new Date(myCurrentDate);
+        myFutureDate.setDate(myFutureDate.getDate()+ 7) ;
+        
         const trackingInfo = this.trackOrderRepo.create({
-            orderCity:orderCity,
-            orderCountry:orderCountry,
-            orderShipAddr:orderShipAddr,
-            orderState: orderState,
+            
+            expectedArrival: myFutureDate,           
+            orderDelivered: false,
+            orderDispatched: false,
+
         });
 
-        // console.log(trackingInfo) ;
+        console.log(trackingInfo) ;
         
         const order = this.ordersRepo.create({
             user: user,
@@ -100,9 +104,9 @@ export class OrdersService {
 
         await this.ordersRepo.save(order) ;
 
-        const pdts = await this.orderDetailsRepo.find({relations: ['products']}) ;
+        const pdts = await this.orderDetailsRepo.find({relations: ['products','products.seller']}) ;
         // console.log(pdts) ;
-
+        return 'Order Inserted !' ;
     }
        
     // async updateById( id:number, email:string, mobile: string, password:string,permaddr:string,city:string,pincode:string,state:string,country:string,cardID:string ) {

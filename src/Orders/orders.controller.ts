@@ -15,23 +15,6 @@ export class OrdersController {
         return this.orderService.getAllOrders();
     }
 
-    @Get('/details/:id/products/')
-    getOrderedProducts(@Param('id') detId:number) {
-        return this.orderService.getProductsOrdered(detId) ;
-    }
-
-    @Get('/details/:id') 
-    getOrderDetails(@Param('id') orderId: number) {
-        return this.orderService.getOrderDetails(orderId) ;
-    }
-
-    @UseGuards(ShopperJwtAuthGuard)
-    @Post()
-    makeOrder(@Request() req, @Body('products') products:number[], @Body('qty') qty: number[], @Body('seller') seller:string, @Body('orderCity') orderCity:string,@Body('orderCountry') orderCountry:string,@Body('orderTax') orderTax: number,@Body('orderShipAddr') orderShipAddr:string,@Body('orderState') orderState:string) {
-        let user = req.user ;
-        this.orderService.insertOrders(user.id , products, qty, seller, orderCity, orderCountry, orderTax, orderShipAddr, orderState) ;
-    }
-
     @UseGuards(ShopperJwtAuthGuard)
     @Get() 
     getProductbyId(@Request() req): Promise<User> {
@@ -45,8 +28,34 @@ export class OrdersController {
     //     return null ;
     // }
 
+}
+
+@Controller('order')
+export class OrderController {
+
+    constructor(
+        private readonly orderService: OrdersService,
+    ) {}
+
+    // @Get(':id/')
+    // getOrderedProducts(@Param('id') detId:number) {
+    //     return this.orderService.getProductsOrdered(detId) ;
+    // }
+
+    @Get('/:id') 
+    getOrderDetails(@Param('id') orderId: number) {
+        return this.orderService.getOrderDetails(orderId) ;
+    }
+
+    @UseGuards(ShopperJwtAuthGuard)
+    @Post()
+    makeOrder(@Request() req, @Body('products') products:number[], @Body('qty') qty: number[] , orderTax: number) {
+        let user = req.user ;
+        return this.orderService.insertOrders(user.id , products, qty,orderTax) ;
+    }
+
     @Delete(':id') 
-    deletePdt(@Param('id') orderId: number) {
+    deleteOrder(@Param('id') orderId: number) {
         this.orderService.deleteById(orderId);
         return null ;
     }

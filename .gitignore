@@ -2,6 +2,8 @@
 /dist
 /node_modules
 
+/client/
+
 #TODO
 /todo
 
@@ -11,8 +13,6 @@
 # Payment - Razor Pay
 src/payment
 
-# Client
-shopping-client
 
 #Test
 test/

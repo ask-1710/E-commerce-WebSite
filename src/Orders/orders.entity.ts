@@ -1,7 +1,7 @@
 import { User } from "../Users/user.entity";
 import { Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { OrderDetails } from "./orderdetails.entity";
-import { TrackOrder } from "src/Tracking/trackOrder.entity";
+import { TrackOrder } from "../Tracking/trackOrder.entity";
 
 @Entity()
 export class Orders {

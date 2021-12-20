@@ -1,6 +1,6 @@
-import { Orders } from 'src/Orders/orders.entity';
-import { ProductReviews } from 'src/Products/product.reviews.entity';
-import { WishList } from 'src/wishlist/wishlist.entity';
+import { Orders } from '../Orders/orders.entity';
+import { ProductReviews } from '../Products/product.reviews.entity';
+import { WishList } from '../wishlist/wishlist.entity';
 import { Column, Entity, PrimaryGeneratedColumn , OneToMany, CreateDateColumn, DeleteDateColumn, BeforeInsert, OneToOne, JoinColumn } from 'typeorm';
 import { Seller } from './seller.entity';
 const bcrypt = require("bcrypt");

@@ -1,5 +1,5 @@
-import { Products } from "src/Products/products.entity";
-import { User } from "src/Users/user.entity";
+import { Products } from "../Products/products.entity";
+import { User } from "../Users/user.entity";
 import { Entity, PrimaryGeneratedColumn , OneToOne , ManyToMany, JoinTable, JoinColumn } from "typeorm";
 
 @Entity()
