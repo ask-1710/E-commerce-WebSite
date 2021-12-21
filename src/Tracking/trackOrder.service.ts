@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { TrackOrder } from "./trackOrder.entity";
@@ -23,9 +23,12 @@ export class TrackerService {
         }) ;
     }
 
-    async getTackingDetailsByOrderID(orderId: number): Promise<Orders[]> {
+    async getTackingDetailsByOrderID(orderId: number): Promise<Orders> {
         // const order = await this.ordersRepo.findOne(orderId) ;
-        const tracker = await this.ordersRepo.find({where: {orderID: orderId}, relations:['trackOrder', 'details','details.products','details.products.seller']}) ;
+        const tracker = await this.ordersRepo.findOne({where: {orderID: orderId}, relations:['trackOrder', 'details','details.products','details.products.seller']}) ;
+        if(!tracker) {
+            throw new NotFoundException('Order does not exist') ;
+        }
         return tracker ;
     }
     

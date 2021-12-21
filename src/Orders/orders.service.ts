@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, NotImplementedException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException, NotImplementedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, SelectQueryBuilder } from "typeorm";
 import { Orders } from './orders.entity' ;
@@ -26,7 +26,7 @@ export class OrdersService {
         return this.ordersRepo.find() ;
     } 
 
-    private async generateOrderAmount(products:Products[], qty: number[], tax: number):Promise<number> {
+    private async generateOrderAmount(products:Products[], qty: number[], tax: number) {
         let amount = 0 ;
         for (var idx = 0 ; idx < products.length ; idx ++ ) {
             if( products[idx].qty < qty[idx] ) {
@@ -39,23 +39,38 @@ export class OrdersService {
         return amount ;
     }
 
-    async getProductsOrdered(orderId: number):Promise<OrderDetails[]> {
-        //  RETURNS THE PRODUCTS ORDERED GIVEN THE ORDER DETAILS ID 
+    async getProductsOrdered(orderId: number){
+        
             const prod = await this.orderDetailsRepo.find({relations:['products'], where: {id: orderId}}) ;
-            return prod ;
+
+            return (prod ? prod : new NotFoundException('Order does not exist')) ;
     }
     
     async getOrderDetails(orderId: number)  {
-        //  RETURNS THE DETAILS GIVEN THE ORDER ID 
         const details = await this.orderDetailsRepo.findOne(orderId, 
             {
                 relations: ['products','products.seller']
             }) ;
 
+            if(!details) {
+                throw new NotFoundException('Order does not exist') ;
+            }
+
         return details ;
     }
 
-    async insertOrders(userID:number,productIDs:number[], qty: number[], orderTax: number) {
+    async insertOrder(userID:number,productIDs:number[], qty: number[], orderTax: number) {
+        if(!userID || !productIDs || !qty || !orderTax) {
+            throw new BadRequestException('Make sure to enter values for fields : \
+            { \
+                products: Products[],\
+                qty: number[],\
+                orderTax: number\
+            }') ;
+        }
+        if(productIDs.length != qty.length) {
+            throw new BadRequestException('The length of products and qty do not match') ;
+        }
         let prod = new Products() ;
         let _orderedProducts= [prod]  ;
         // let someArray: Array<{ id: number, name: string }> = []
@@ -63,6 +78,10 @@ export class OrdersService {
         for (var i=0;i<productIDs.length;i++) {
             const pid = productIDs[i] ;
             let pdt = await this.productsRepo.findOne(pid) ;
+            if(!pdt) {
+                var str = 'Product ' +pid+'does not exist' ;
+                throw new NotFoundException(str) ;
+            }
             _orderedProducts.push(pdt) ;
         }
         _orderedProducts.splice(0,1) ;
@@ -126,15 +145,18 @@ export class OrdersService {
     //     await this.ordersRepo.save(updatedOrders) ;
     // }
 
-    async deleteById(OrdersID : number) {
-        
-        await this.ordersRepo.delete(OrdersID) ;
-
+    async deleteById(orderID : number) {
+        const order = await this.ordersRepo.findOne(orderID) ;
+        if(!order) {
+            throw new NotFoundException('Order not Found') ;
+        }
+        await this.ordersRepo.delete(orderID) ;
+        return 'Order deleted !' ;
     }
 
     async getOrdersByUID(userId:number) {
         const user = await this.usersRepo.findOne(userId, {relations: ['orders','orders.details','orders.details.products']}) ;
-
+        
         return user ; 
     }
 

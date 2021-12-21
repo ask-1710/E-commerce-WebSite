@@ -13,7 +13,7 @@ export class SellerLocalStrategy extends PassportStrategy(Strategy,'seller-strat
     const user = await this.authService.validateLogin(mobile, password);
     
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Log in as Seller to access this endpoint at /login/seller');
     }
     return user;
   }

@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from './user.entity'
@@ -20,7 +20,29 @@ export class UserService {
         return this.usersRepo.find() ;        
     }
 
-    insertUser(firstName:string,middleName:string,lastName:string,dob:string,email:string,mobile:string, password: string, permaddr: string,city:string, pincode: string,state:string,country:string,cardID:string) {
+    async insertUser(firstName:string,middleName:string,lastName:string,dob:string,email:string,mobile:string, password: string, permaddr: string,city:string, pincode: string,state:string,country:string,cardID:string) {
+        if(!firstName || !dob || !email || !mobile || !password || !permaddr || !city || !state || !cardID) {
+            throw new BadRequestException('Request body format: \
+            { \
+                firstName: string ,\
+                middleName: string(optional),\
+                lastName: string(optional),\
+                DOB: string,\
+                email: string,\
+                mobile: string,\
+                password: string,\
+                permanent_addr: string,\
+                city: string,\
+                pincode: string,\
+                state: string(default: India),\
+                country: string,\
+                cardId: string\
+            ') ;
+        }
+        const val = this.checkPassword(password) ;
+        if(val == 'Weak' || val=='Too weak') {
+            return 'Use a stronger password !!' ;
+        }
         const usr = this.usersRepo.create({
             firstName: firstName,
             middleName: middleName,
@@ -38,7 +60,10 @@ export class UserService {
             orders: []
         }) ;
         
-        this.usersRepo.save(usr) ;
+        await this.usersRepo.save(usr) ;
+
+        return 'User account created' ;
+
     }
 
     async findUser(Id: number): Promise<any> {
@@ -91,6 +116,18 @@ export class UserService {
     }
 
     async createSellerAccount(userId: number, pickupAddr: string, pickupCity: string, pickupPincode: string, pickupState: string, pickupCountry: string, pancardId: string) {
+        if(!pickupAddr || !pickupCity || !pickupPincode || !pickupState || !pancardId) {
+            throw new BadRequestException('Request Body format : \
+            {\
+                pickupAddr: string,\
+                pickupCity: string,\
+                pickupPincode: string,\
+                pickupState: string,\
+                pickupCountry: string(default: India),\
+                pancardId: string\
+            }\
+            ')
+        }
         const user = await this.usersRepo.findOne(userId) ;
         let seller = this.sellerRepo.create({
             userId: user,

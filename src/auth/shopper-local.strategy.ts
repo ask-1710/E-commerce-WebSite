@@ -13,7 +13,7 @@ export class ShopperLocalStrategy extends PassportStrategy(Strategy,'shopper-str
     const user = await this.authService.validateLogin(mobile, password);
     
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Log in as Shopper to access this endpoint at /login/shopper');
     }
     return user;
   }

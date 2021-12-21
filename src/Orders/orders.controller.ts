@@ -4,19 +4,19 @@ import { OrdersService } from "./orders.service";
 import { Request } from "@nestjs/common";
 import { User } from "src/Users/user.entity";
 
-@Controller('orders')
+@Controller()
 export class OrdersController {
     constructor(
         private readonly orderService: OrdersService
     ) {}
 
-    @Get('/all')
+    @Get('orders')
     getallOrders() {
         return this.orderService.getAllOrders();
     }
 
     @UseGuards(ShopperJwtAuthGuard)
-    @Get() 
+    @Get('myorders') 
     getProductbyId(@Request() req): Promise<User> {
         console.log(req.user.id) ; 
         return this.orderService.getOrdersByUID(req.user.id) ;
@@ -47,17 +47,17 @@ export class OrderController {
         return this.orderService.getOrderDetails(orderId) ;
     }
 
-    @UseGuards(ShopperJwtAuthGuard)
+    @UseGuards(ShopperJwtAuthGuard) // 
     @Post()
     makeOrder(@Request() req, @Body('products') products:number[], @Body('qty') qty: number[] , @Body('tax') orderTax: number) {
         let user = req.user ;
-        return this.orderService.insertOrders(user.id , products, qty,orderTax) ;
+        return this.orderService.insertOrder(user.id , products, qty,orderTax) ;
     }
 
-    @Delete(':id') 
+    @Delete(':id')  // done
     deleteOrder(@Param('id') orderId: number) {
-        this.orderService.deleteById(orderId);
-        return null ;
+        return this.orderService.deleteById(orderId) ;
+        
     }
 
 }

@@ -2,7 +2,8 @@
 /dist
 /node_modules
 
-/client/
+#client
+/client
 
 #TODO
 /todo
@@ -53,3 +54,5 @@ lerna-debug.log*
 .env
 
 yarn.lock
+
+/client

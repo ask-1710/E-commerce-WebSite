@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Seller } from "src/Users/seller.entity";
 import { User } from "src/Users/user.entity";
@@ -37,7 +37,7 @@ export class ProductService {
     }
     
     private async findProduct(Id: number): Promise<Products> {
-        const pdt = await this.productsRepo.find({id: Id}) ;
+        const pdt = await this.productsRepo.findOne(Id) ;
         // console.log(pdt) ;
         if (!pdt) {
             throw new NotFoundException('Product not found');
@@ -47,6 +47,7 @@ export class ProductService {
 
     getProductbyId(Id: number): Promise<Products> {
         const pdt = this.findProduct(Id) ;
+        if(!pdt) throw new NotFoundException('Product not found') ;
         return pdt ;
     }
 
@@ -66,6 +67,18 @@ export class ProductService {
     }
     
     async insertProduct(userId: number,name: string, description:string, price: number, categoryname: string, qty: number) {
+
+        if(!userId || !name || !description || !price || !categoryname || !qty) {
+            throw new BadRequestException('Request format \
+            {\
+                name: string,\
+                description: string,\
+                price: number,\
+                categoryname: string,\
+                qty: number\
+            }\
+            ') ;
+        }
         
         let newCategory = await this.findCategory(categoryname) ;
         let user = await this.sellerRepo.findOne({
@@ -109,15 +122,27 @@ export class ProductService {
     
     }
 
-    async getPdtReviews(prodID: number): Promise<Products[]> {
-        return await this.productsRepo.find({where:{id: prodID}, relations:['reviews']}) ;        
+    async getPdtReviews(prodID: number): Promise<Products> {
+        const pdt = await this.productsRepo.findOne({where:{id: prodID}, relations:['reviews']}) ;        
+        if(!pdt) throw new NotFoundException('Product Not found') ;
+        return pdt;
     }
 
     async addReview(prodID:number, descr: string, userID: number, rating:number) // add automatic review JwtauthGaurd
     {
         const pdt = await this.productsRepo.findOne(prodID) ;
 
-        if(!pdt) return new NotFoundException('Product Not Found') ;
+        if(!pdt) throw new NotFoundException('Product Not Found') ;
+
+        if(!rating || !prodID || descr ) {
+            throw new BadRequestException('Request body :\
+            {\
+                prodID: number,\
+                descr: string,\
+                rating: number\
+            }\
+            ') ;
+        }
         
         const user = await this.usersRepo.findOne(userID) ;
         
@@ -142,6 +167,16 @@ export class ProductService {
     }
 
     async updateById(userId:number, id:number, name:string, descr:string, price:number) {  // cannot change category -> limitation
+
+        if(!id) {
+            throw new BadRequestException('Request body format: \
+            {\
+                title: string(optional)\
+                description: string(optional)\
+                price: number(optional)\
+            }\
+            ') ;
+        }
 
         const pdt = await this.productsRepo.findOne(id, {
             relations: ['category', 'category.products'],
@@ -200,7 +235,7 @@ export class ProductService {
             relations: ['category','category.products'],
         }) ;
 
-        if(!pdt) return new NotFoundException('Product Not Found') ;
+        if(!pdt) throw new NotFoundException('Product Not Found') ;
 
         var idx: number ;
 

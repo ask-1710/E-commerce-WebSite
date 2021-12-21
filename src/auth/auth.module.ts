@@ -17,7 +17,7 @@ import { SellerAuthService } from './seller-auth.service';
     PassportModule, 
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '300s' },
+      signOptions: { expiresIn: '72h' },
     }),
   ],
   providers: [ShopperAuthService, SellerLocalStrategy ,  SellerAuthService , ShopperLocalStrategy , ShopperJwtStrategy, SellerJwtStrategy ],

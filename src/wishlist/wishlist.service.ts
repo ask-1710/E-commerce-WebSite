@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Products } from "src/Products/products.entity";
 import { User } from "src/Users/user.entity";
@@ -30,7 +30,7 @@ export class WishListService {
 
     async addProduct(userId: number, prodId: number) {
         const prod = await this.productRepo.findOne(prodId) ;
-        if(!prod) return 'Product does not exist !!' ;
+        if(!prod) throw new NotFoundException('Product does not exist !!') ;
 
         const wishlist = await this.wishlistRepo.findOne({
                             where:{
@@ -38,7 +38,7 @@ export class WishListService {
                             },
                             relations: ['id','products'],
                         }) ;
-        console.log(wishlist) ;
+        // console.log(wishlist) ;
       
         if(!wishlist) {
             console.log('New WishList Created !!') ;
@@ -84,22 +84,24 @@ export class WishListService {
             relations: ['id','products'],
         }) ;
 
-        console.log('BEFORE\n') ;
-        console.log(wishlist.products);
+        // console.log('BEFORE\n') ;
+        // console.log(wishlist.products);
         
+
         var idx:number ;
         for(idx=0 ; idx < wishlist.products.length ; idx ++) {
             if(wishlist.products[idx].id == prodId) break;
         }
-        console.log('INDEX',idx) ;
+        // console.log('INDEX',idx) ;
 
          
         if(idx > -1 && idx < wishlist.products.length)
              wishlist.products.splice(idx,1) ;  // removes the last element since index is -1     
+        else 
+            throw new NotFoundException('Product does not exist in Wishlist') ;
 
-
-        console.log('\nAFTER\n') ;
-        console.log(wishlist.products) ;
+        // console.log('\nAFTER\n') ;
+        // console.log(wishlist.products) ;
 
         return await this.wishlistRepo.save(wishlist) ;
     }
