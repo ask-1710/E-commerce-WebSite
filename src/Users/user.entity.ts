@@ -22,6 +22,9 @@ export class User {
 
     @Column()
     DOB: string;
+    /* change */
+    @Column({default: 'M'})
+    gender: string;
     
     @Column({unique: true})
     email: string ;

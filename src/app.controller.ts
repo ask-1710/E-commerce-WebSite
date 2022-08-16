@@ -39,13 +39,17 @@ export class AppController {
   @UseGuards(ShopperLocalAuthGuard)
   @Post('login/shopper')
   async shopperLogin(@Request() req) {
-    return this.authService.login(req.user);
+    const resp = this.authService.login(req.user) ;
+    console.log(resp) ;
+    return resp
   }
 
   @UseGuards(SellerLocalAuthGuard) 
   @Post('login/seller')
   async sellerLogin(@Request() req) {
-    return this.sellerAuthService.login(req.user) ;
+    const resp = this.sellerAuthService.login(req.user) ;
+    console.log(resp)
+    return  resp;
   }
   
   @UseGuards(ShopperJwtAuthGuard) 

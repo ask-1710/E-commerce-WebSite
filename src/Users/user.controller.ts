@@ -24,18 +24,17 @@ export class UserController {
     getUser(@Request() req) {
         return this.userService.findUser(req.user.id) ;
     }
-        
+    
     @Post()
-    addUser(@Body('firstName') firstname:string, @Body('middleName') middlename: string,@Body('lastName') lastname:string, @Body('DOB') dob:string, @Body('email') email:string, @Body('mobile') mobile:string ,@Body('password') password:string, @Body('permanent_addr') permaddr:string, @Body('city') city:string, @Body('pincode') pincode:string, @Body('state') state:string, @Body('country') country:string, @Body('cardId') cardID:string) {
-        this.userService.insertUser(firstname,middlename,lastname,dob,email,mobile,password,permaddr,city,pincode,state,country,cardID);
-        return 'User Added';
+    addUser(@Body('firstName') firstname:string,  @Body('middleName') middlename: string,@Body('lastName') lastname:string, @Body('DOB') dob:string, @Body('email') email:string, @Body('mobile') mobile:string ,@Body('password') password:string, @Body('permanent_addr') permaddr:string, @Body('city') city:string, @Body('pincode') pincode:string, @Body('state') state:string, @Body('country') country:string, @Body('cardId') cardID:string ,@Body('gender') gender:string) {
+        return this.userService.insertUser(firstname,middlename,lastname,dob,email,mobile,password,permaddr,city,pincode,state,country,cardID,gender);
+              
     }
 
     @UseGuards(ShopperJwtAuthGuard)
     @Patch()
-    updateUser(@Request() req, @Body('email') email:string, @Body('mobile') mobile:string, @Body('permanent_addr') permaddr:string, @Body('city') city:string, @Body('pincode') pincode:string, @Body('state') state:string, @Body('country') country:string, @Body('cardId') cardID:string) {
-        this.userService.updateById(req.user.id,email,mobile,permaddr,city,pincode,state,country,cardID);
-        return null ;
+    updateUser(@Request() req, @Body('email') email:string, @Body('mobile') mobile:string, @Body('permanent_addr') permaddr:string, @Body('city') city:string, @Body('pincode') pincode:string, @Body('state') state:string, @Body('country') country:string) {
+        return this.userService.updateById(req.user.id,email,mobile,permaddr,city,pincode,state,country);
     }
 
     @UseGuards(ShopperJwtAuthGuard)
@@ -47,9 +46,9 @@ export class UserController {
 
     @UseGuards(ShopperJwtAuthGuard) 
     @Patch('/changepassword')
-    changePassword(@Request() req, @Body('password') password:string) {
-        console.log('User ', req.user.id) ;
-        return this.userService.changePassword(req.user.id, password) ;
+    changePassword(@Request() req, @Body('oldpassword') oldpassword:string , @Body('newpassword') newpassword:string) {
+        // console.log('User ', req.user.id) ;
+        return this.userService.changePassword(req.user.id, oldpassword, newpassword) ;
     }
     
     @UseGuards(SellerJwtAuthGuard)

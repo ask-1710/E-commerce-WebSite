@@ -42,12 +42,11 @@ export class ProductService {
         if (!pdt) {
             throw new NotFoundException('Product not found');
         }
-        return {...pdt[0]}
+        return {...pdt}
     }
 
     getProductbyId(Id: number): Promise<Products> {
         const pdt = this.findProduct(Id) ;
-        if(!pdt) throw new NotFoundException('Product not found') ;
         return pdt ;
     }
 
@@ -122,10 +121,27 @@ export class ProductService {
     
     }
 
-    async getPdtReviews(prodID: number): Promise<Products> {
-        const pdt = await this.productsRepo.findOne({where:{id: prodID}, relations:['reviews']}) ;        
+    async getPdtReviews(prodID: number): Promise<ProductReviews[]> {    
+        const pdt = await this.productsRepo.findOne(prodID, {relations:['reviews']}) ;        
         if(!pdt) throw new NotFoundException('Product Not found') ;
-        return pdt;
+        return pdt.reviews;
+    }
+
+    async getPdtsByCategory(cat: number): Promise<Products[]> {
+        const pdts = await this.productCategoryRepo.findOne(cat,{
+            relations:['products']
+        }) ;
+
+        if(pdts) {
+            return pdts.products ;
+        }
+        else{
+            throw new BadRequestException('Product Category does not Exists') ;
+        }
+    }
+
+    async getCategories(): Promise<ProductCategory[]> {
+        return await this.productCategoryRepo.find()
     }
 
     async addReview(prodID:number, descr: string, userID: number, rating:number) // add automatic review JwtauthGaurd
@@ -134,11 +150,10 @@ export class ProductService {
 
         if(!pdt) throw new NotFoundException('Product Not Found') ;
 
-        if(!rating || !prodID || descr ) {
+        if(!rating || !prodID || !descr ) {
             throw new BadRequestException('Request body :\
             {\
-                prodID: number,\
-                descr: string,\
+                description: string,\
                 rating: number\
             }\
             ') ;
@@ -274,6 +289,18 @@ export class ProductService {
             relations: ['products','userId','products.category'],
         });
 
+    }
+
+    async getSeller(pid: number): Promise<Seller> {
+        const pdt = await this.productsRepo.findOne(pid, {
+            relations:['seller','seller.products']
+        })
+
+        if(!pdt) {
+            throw new BadRequestException('Product not Found')
+        }
+
+        return pdt.seller
     }
 
 }

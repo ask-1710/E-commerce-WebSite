@@ -7,7 +7,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(
-    AppModule,
+    AppModule, {cors:true}
   );
   const viewsPath = join(__dirname, '../public/views');
 

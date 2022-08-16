@@ -4,6 +4,8 @@ import { Repository } from "typeorm";
 import { User } from './user.entity'
 import { passwordStrength } from 'check-password-strength' ;
 import { Seller } from "./seller.entity";
+import { isEmail, isMobilePhone } from "class-validator";
+const bcrypt = require('bcrypt') ;
 
 @Injectable()
 export class UserService {
@@ -20,8 +22,8 @@ export class UserService {
         return this.usersRepo.find() ;        
     }
 
-    async insertUser(firstName:string,middleName:string,lastName:string,dob:string,email:string,mobile:string, password: string, permaddr: string,city:string, pincode: string,state:string,country:string,cardID:string) {
-        if(!firstName || !dob || !email || !mobile || !password || !permaddr || !city || !state || !cardID) {
+    async insertUser(firstName:string,middleName:string,lastName:string,dob:string,email:string,mobile:string, password: string, permaddr: string,city:string, pincode: string,state:string,country:string,cardID:string,gender:string) {
+        if(!firstName || !dob || !email || !mobile || !password || !permaddr || !city || !state || !gender || !cardID) {
             throw new BadRequestException('Request body format: \
             { \
                 firstName: string ,\
@@ -36,12 +38,13 @@ export class UserService {
                 pincode: string,\
                 state: string(default: India),\
                 country: string,\
-                cardId: string\
+                cardId: string,\
+                gender: string\
             ') ;
         }
         const val = this.checkPassword(password) ;
         if(val == 'Weak' || val=='Too weak') {
-            return 'Use a stronger password !!' ;
+            throw new BadRequestException('Use a stronger password !!');
         }
         const usr = this.usersRepo.create({
             firstName: firstName,
@@ -57,6 +60,7 @@ export class UserService {
             pincode: pincode,
             country: country,
             cardId: cardID,
+            gender: gender,
             orders: []
         }) ;
         
@@ -76,15 +80,14 @@ export class UserService {
         return result;
     }  
    
-    async updateById( id:number, email:string, mobile: string, permaddr:string,city:string,pincode:string,state:string,country:string,cardID:string ) {
-        // let updatedUser = this.usersRepo.create();
+    async updateById( id:number, email:string, mobile: string, permaddr:string,city:string,pincode:string,state:string,country:string ) {
+        
         const updatedUser = await this.usersRepo.findOne(id) ;
-        if(email) updatedUser.email=email;
-        if(mobile) updatedUser.mobile=mobile;
+        if(email && isEmail(email)) updatedUser.email=email;
+        if(mobile && isMobilePhone(mobile, 'en-IN')) updatedUser.mobile=mobile;
         if(permaddr) updatedUser.permanent_addr=permaddr;
         if(city) updatedUser.city=city;
         if(pincode) updatedUser.pincode=pincode;
-        if(cardID) updatedUser.cardId=cardID ;
         if(state) updatedUser.state=state;
         if(country) updatedUser.country=country;
         // separate function to reset password
@@ -105,13 +108,21 @@ export class UserService {
         return passwordStrength(password).value ;
     }
 
-    async changePassword(userId:number, password:string) {
-        const val = this.checkPassword(password) ;
-        if(val == 'Weak' || val=='Too weak') {
-            return 'Use a stronger password !!' ;
-        }
+    async changePassword(userId:number, oldpassword:string, newpassword:string) {
         const user = await this.usersRepo.findOne(userId) ;
-        user.password = password ;
+
+        const match = await bcrypt.compare(oldpassword, user.password);
+
+        if(!match) {
+            return new BadRequestException('Incorrect Credentials')
+        }
+
+        const val = this.checkPassword(newpassword) ;
+        if(val == 'Weak' || val=='Too weak') {
+            return new BadRequestException('Use a stronger password !!') ;
+        }
+        user.password = newpassword ;
+        this.usersRepo.save(user) 
         return 'Password changed !!' ;        
     }
 

@@ -47,14 +47,13 @@ export class OrdersService {
     }
     
     async getOrderDetails(orderId: number)  {
-        const details = await this.orderDetailsRepo.findOne(orderId, 
-            {
-                relations: ['products','products.seller']
-            }) ;
+        const details = await this.ordersRepo.findOne(orderId,{
+            relations:['user','details','details.products','trackOrder']
+        })
 
-            if(!details) {
-                throw new NotFoundException('Order does not exist') ;
-            }
+        if(!details) {
+            throw new NotFoundException('Order does not exist') ;
+        }
 
         return details ;
     }
@@ -155,7 +154,7 @@ export class OrdersService {
     }
 
     async getOrdersByUID(userId:number) {
-        const user = await this.usersRepo.findOne(userId, {relations: ['orders','orders.details','orders.details.products']}) ;
+        const user = await this.usersRepo.findOne(userId, {relations: ['orders','orders.details','orders.details.products','orders.trackOrder']}) ;
         
         return user ; 
     }

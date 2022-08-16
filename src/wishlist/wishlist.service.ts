@@ -17,15 +17,11 @@ export class WishListService {
     ) {}
     
     async getAll(userId: number) {
-        const user = await this.userRepo.findOne(userId) ;
-        return await this.wishlistRepo.find({
-            where: {
-                "id": {
-                    "id": userId,
-                }
-            },
-            relations:['products','id'],
-        }) ; 
+        const user = await this.userRepo.findOne(userId, {
+            relations: ['wishlist', 'wishlist.products']
+        }) ;
+        const products =  user.wishlist.products;
+        return products;
     }
 
     async addProduct(userId: number, prodId: number) {

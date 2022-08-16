@@ -19,6 +19,16 @@ export class ProductsController {
         return this.pdtservice.getProducts();
     }
 
+    @Get('category/:id/')
+    getpdtsByCategory(@Param('id') id:number) {
+        return this.pdtservice.getPdtsByCategory(id) ;
+    }
+
+    @Get('categories/')
+    getCategories() {
+        return this.pdtservice.getCategories()
+    }
+
 }
 
 @Controller('product') 
@@ -58,16 +68,21 @@ export class ProductController {
     // }
 
     @Get(':id/reviews')
-    getProductReviews(@Param('id') productId: number) {
-        return this.pdtservice.getPdtReviews(productId) ;
+    getProductReviews(@Param('id') id: number) {
+        return this.pdtservice.getPdtReviews(id) ;
+    }
+
+    @Get(':id/seller') 
+    getProductSeller(@Param('id') id:number) {
+        return this.pdtservice.getSeller(id) 
     }
 
     @UseGuards(ShopperJwtAuthGuard)
     @Post(':id/reviews')
-    addProductReview(@Request() req, @Param('id') productId: number,@Body('description') descr: string, @Body('rating') rating:number ) {
+    addProductReview(@Request() req, @Param('id') id:number,@Body('description') description:string, @Body('rating') rating:number ) {
         const userID = req.user.id ;
-        this.pdtservice.addReview(productId,descr,userID,rating) ;
-        return null ;
+        return this.pdtservice.addReview(id,description,userID,rating) ;
+
     }
 
 }
