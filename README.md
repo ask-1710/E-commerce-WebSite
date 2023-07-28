@@ -22,6 +22,8 @@ ORM: TypeORM
 
 Frontend: React
 
+Implemented features such as interceptor logging, authentication guards, pipes for data transformation available with NestJS. 
+
 
 ## Running the app
 
