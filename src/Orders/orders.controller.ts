@@ -17,7 +17,7 @@ export class OrdersController {
 
     @UseGuards(ShopperJwtAuthGuard)
     @Get('myorders') 
-    getProductbyId(@Request() req): Promise<User> {
+    getOrdersByUserId(@Request() req): Promise<User> {
         console.log(req.user.id) ; 
         return this.orderService.getOrdersByUID(req.user.id) ;
     }
