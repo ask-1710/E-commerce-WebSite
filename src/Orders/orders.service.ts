@@ -122,7 +122,7 @@ export class OrdersService {
 
         await this.ordersRepo.save(order) ;
 
-        const pdts = await this.orderDetailsRepo.find({relations: ['products','products.seller']}) ;
+        // const pdts = await this.orderDetailsRepo.find({relations: ['products','products.seller']}) ;
         // console.log(pdts) ;
         return 'Order Inserted !' ;
     }
