@@ -40,6 +40,7 @@ export default function OrderDetails(props){
     }
 
     const onChangeSetProduct = (e) => {
+        if(e.target.value == '') return;
         setReviewStatus(false)
         const pid = e.target.value
         // console.log(pid)
@@ -74,6 +75,7 @@ export default function OrderDetails(props){
                 <label className='text-italics'>Choose a product to add a review</label>
                 <div className='col-1'></div>
                 <select className='custom-select px-5 py-1' type='select' placeholder="Products" onChange={onChangeSetProduct}>
+                    <option value=''>Select a product</option>
                 {
                     orderDetails.details.products.map(pdt=>{
                         return <option value={pdt.id}> {pdt.name} </option>

@@ -146,11 +146,7 @@ export class ProductService {
 
     async addReview(prodID:number, descr: string, userID: number, rating:number) // add automatic review JwtauthGaurd
     {
-        const pdt = await this.productsRepo.findOne(prodID) ;
-
-        if(!pdt) throw new NotFoundException('Product Not Found') ;
-
-        if(!rating || !prodID || !descr ) {
+        if(!rating || !prodID || !descr) {
             throw new BadRequestException('Request body :\
             {\
                 description: string,\
@@ -158,7 +154,11 @@ export class ProductService {
             }\
             ') ;
         }
-        
+
+        const pdt = await this.productsRepo.findOne(prodID) ;
+
+        if(!pdt) throw new NotFoundException('Product Not Found') ;
+
         const user = await this.usersRepo.findOne(userID) ;
         
         const pdtReview = new ProductReviews() ;

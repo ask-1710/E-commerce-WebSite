@@ -94,7 +94,7 @@ const Login = props => {
 						<div>     
 							<div class="alert alert-success" role="success">
 								Logged In, To check your account
-								go to <Link to='/myaccount'>my account</Link>
+								go to <Link to='/myaccount'>my account</Link><br/>
 								To change your password go to  <Link to='/changepassword'>Change my password</Link>
 							</div>
 						</div>
