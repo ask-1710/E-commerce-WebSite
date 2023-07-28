@@ -65,8 +65,8 @@ export class User {
     @OneToMany(type => Orders, order=>order.user) 
     orders: Orders[];
 
-    @OneToMany(type=>ProductReviews, review=>review.user) 
-    reviews: ProductReviews[] ;
+    // @OneToMany(type=>ProductReviews, review=>review.user) 
+    // reviews: ProductReviews[] ;
 
     @OneToOne(type=>WishList, wishlist=>wishlist.id)
     wishlist: WishList ;
