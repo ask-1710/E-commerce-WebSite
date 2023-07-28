@@ -1,4 +1,4 @@
-import { Controller, Post ,Body, Get ,Param,Patch,Delete, UseGuards } from "@nestjs/common";
+import { Controller, Post ,Body, Get ,Param,Patch,Delete, UseGuards, ParseIntPipe, HttpStatus, ParseArrayPipe } from "@nestjs/common";
 import { ShopperJwtAuthGuard } from "src/auth/shopper-jwt-auth.gaurd";
 import { OrdersService } from "./orders.service";
 import { Request } from "@nestjs/common";
@@ -43,19 +43,19 @@ export class OrderController {
     // }
 
     @Get(':id') 
-    getOrderDetails(@Param('id') orderId: number) {
+    getOrderDetails(@Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) orderId: number) {
         return this.orderService.getOrderDetails(orderId) ;
     }
 
     @UseGuards(ShopperJwtAuthGuard) // 
     @Post()
-    makeOrder(@Request() req, @Body('products') products:number[], @Body('qty') qty: number[] , @Body('tax') orderTax: number) {
+    makeOrder(@Request() req, @Body('products', ParseArrayPipe) products:number[], @Body('qty', ParseArrayPipe) qty: number[] , @Body('tax', ParseIntPipe) orderTax: number) {
         let user = req.user ;
         return this.orderService.insertOrder(user.id , products, qty,orderTax) ;
     }
 
     @Delete(':id')  // done
-    deleteOrder(@Param('id') orderId: number) {
+    deleteOrder(@Param('id', ParseIntPipe) orderId: number) {
         return this.orderService.deleteById(orderId) ;
         
     }

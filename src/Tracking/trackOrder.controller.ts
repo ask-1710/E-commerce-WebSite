@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards, Request, Body } from "@nestjs/common";
+import { Controller, Get, Param, UseGuards, Request, Body, ParseIntPipe } from "@nestjs/common";
 import { ShopperJwtAuthGuard } from "src/auth/shopper-jwt-auth.gaurd";
 import { TrackerService } from "./trackOrder.service";
 
@@ -15,7 +15,7 @@ export class TrackerController {
     }
 
     @Get('trackOrder/:id')
-    getTrackingInfoByOrder(@Param('id') orderId:number) {
+    getTrackingInfoByOrder(@Param('id', ParseIntPipe) orderId:number) {
         return this.trackerService.getTackingDetailsByOrderID(orderId) ;
     }
 
