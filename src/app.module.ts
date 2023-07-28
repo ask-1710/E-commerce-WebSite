@@ -17,6 +17,9 @@ import { AppService } from './app.service';
 import { WishListModule } from './wishlist/wishlist.module';
 import { WishList } from './wishlist/wishlist.entity';
 import { Seller } from './Users/seller.entity';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { LoggingInterceptor } from './interceptors/logging.interceptor';
+
 
 const dotenv = require('dotenv') ;
 dotenv.config() ;
@@ -50,7 +53,13 @@ dotenv.config() ;
 
   ],
   controllers: [AppController],
-  providers: [AppService], 
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+  ], 
 })
 
 

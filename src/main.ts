@@ -4,6 +4,7 @@ import { NestFastifyApplication, FastifyAdapter } from '@nestjs/platform-fastify
 import { AppModule } from './app.module';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { LoggingInterceptor } from './interceptors/logging.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(
@@ -14,6 +15,8 @@ async function bootstrap() {
   app.set('views', viewsPath);
 
   app.setViewEngine('hbs') ;
+
+  app.useGlobalInterceptors(new LoggingInterceptor());
 
   await app.listen(5000);
 

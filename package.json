@@ -31,6 +31,7 @@
     "@types/passport": "^1.0.7",
     "bcrypt": "^5.0.1",
     "check-password-strength": "^2.0.3",
+    "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "dotenv": "^10.0.0",
     "fastify-static": "^4.5.0",
