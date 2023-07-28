@@ -14,13 +14,13 @@ export class Orders {
     }) 
     user: User ;
 
-    @OneToOne(type=>OrderDetails, details=>details.order, {
+    @OneToOne(()=>OrderDetails, {
         cascade: ["insert","soft-remove","remove"],
     }) 
     @JoinColumn()
     details: OrderDetails ;
 
-    @OneToOne(type=>TrackOrder, track=>track.orderInfo, {
+    @OneToOne(()=>TrackOrder, {
         cascade: ['insert','remove','soft-remove'],
     })
     @JoinColumn()

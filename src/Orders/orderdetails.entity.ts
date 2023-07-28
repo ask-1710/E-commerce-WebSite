@@ -7,8 +7,8 @@ export class OrderDetails {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @OneToOne(type=>Orders, order=>order.orderID)
-    order: Orders;
+    // @OneToOne(type=>Orders, order=>order.orderID)
+    // order: Orders;
 
     @Column()
     orderAmount: number;

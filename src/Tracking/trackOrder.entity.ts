@@ -18,6 +18,6 @@ export class TrackOrder {
     @Column({default:false})
     orderDispatched: boolean;
 
-    @OneToOne(type=>Orders, order=>order.trackOrder) 
-    orderInfo: Orders ;
+    // @OneToOne(type=>Orders, order=>order.trackOrder) 
+    // orderInfo: Orders ;
 }
